@@ -4,6 +4,8 @@ import { sanityFetch } from "@workspace/sanity/live";
 import { queryBlogPaths, queryBlogSlugPageData } from "@workspace/sanity/query";
 import { notFound } from "next/navigation";
 
+import Link from "next/link";
+
 import { RichText } from "@/components/elements/rich-text";
 import { SanityImage } from "@/components/elements/sanity-image";
 import { TableOfContent } from "@/components/elements/table-of-content";
@@ -84,6 +86,7 @@ export default async function BlogSlugPage({
     return notFound();
   }
   const { title, description, image, richText } = data ?? {};
+  const linkedPokemon = (data as { linkedPokemon?: string } | undefined)?.linkedPokemon;
 
   return (
     <div className="container mx-auto my-16 px-4 md:px-6">
@@ -107,6 +110,17 @@ export default async function BlogSlugPage({
             </div>
           )}
           <RichText richText={richText} />
+          {linkedPokemon && (
+            <p className="mt-8 pt-6 border-t text-muted-foreground text-sm">
+              Related Pokemon:{" "}
+              <Link
+                href={`/pokedex/${linkedPokemon}`}
+                className="font-medium text-foreground underline hover:no-underline"
+              >
+                {linkedPokemon.charAt(0).toUpperCase() + linkedPokemon.slice(1)}
+              </Link>
+            </p>
+          )}
         </main>
 
         <div className="hidden lg:block">

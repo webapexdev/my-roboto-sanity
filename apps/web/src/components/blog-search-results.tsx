@@ -1,13 +1,17 @@
 "use client";
 
+import Link from "next/link";
 import { cn } from "@workspace/ui/lib/utils";
 
 import { BlogList } from "@/components/blog-list";
 import type { Blog } from "@/types";
 
+type PokedexHit = { _id: string; type: "pokedex"; name: string; types?: string[] };
+
 type BlogSearchResultsProps = {
   className?: string;
   results: Blog[];
+  pokemon?: PokedexHit[];
   isSearching: boolean;
   hasQuery: boolean;
   searchQuery: string;
@@ -16,18 +20,21 @@ type BlogSearchResultsProps = {
 
 function SearchResultsHeader({
   query,
-  count,
+  blogCount,
+  pokemonCount,
 }: {
   query: string;
-  count: number;
+  blogCount: number;
+  pokemonCount: number;
 }) {
+  const total = blogCount + pokemonCount;
   return (
     <div className="mb-6">
       <h2 className="font-semibold text-lg">Search Results for "{query}"</h2>
       <p className="text-muted-foreground text-sm">
-        {count === 0
-          ? "No articles found"
-          : `${count} article${count === 1 ? "" : "s"} found`}
+        {total === 0
+          ? "No results found"
+          : `${blogCount} article${blogCount === 1 ? "" : "s"}${pokemonCount > 0 ? `, ${pokemonCount} Pokemon` : ""} found`}
       </p>
     </div>
   );
@@ -57,7 +64,13 @@ function EmptySearchState({ query }: { query: string }) {
   );
 }
 
-function ErrorState({ query }: { query: string }) {
+function ErrorState({
+  query,
+  message,
+}: {
+  query: string;
+  message?: string | null;
+}) {
   return (
     <div className="py-12 text-center">
       <div className="mx-auto max-w-md">
@@ -65,8 +78,8 @@ function ErrorState({ query }: { query: string }) {
           Search failed
         </h3>
         <p className="mb-4 text-muted-foreground">
-          We encountered an error while searching for "{query}". Please try
-          again.
+          {message ??
+            `We encountered an error while searching for "${query}". Please try again.`}
         </p>
         <div className="text-muted-foreground text-sm">
           <p>If the problem persists:</p>
@@ -116,6 +129,7 @@ function LoadingState() {
 export function BlogSearchResults({
   className,
   results,
+  pokemon = [],
   isSearching,
   hasQuery,
   searchQuery,
@@ -133,16 +147,46 @@ export function BlogSearchResults({
     );
   }
 
+  const totalCount = results.length + pokemon.length;
+
   return (
     <section className={cn("mt-8", className)}>
-      <SearchResultsHeader count={results.length} query={searchQuery} />
+      <SearchResultsHeader
+        blogCount={results.length}
+        pokemonCount={pokemon.length}
+        query={searchQuery}
+      />
 
       {error ? (
-        <ErrorState query={searchQuery} />
-      ) : results.length === 0 ? (
+        <ErrorState query={searchQuery} message={error.message} />
+      ) : totalCount === 0 ? (
         <EmptySearchState query={searchQuery} />
       ) : (
-        <BlogList blogs={results} />
+        <div className="space-y-10">
+          {results.length > 0 && <BlogList blogs={results} />}
+          {pokemon.length > 0 && (
+            <div>
+              <h3 className="mb-3 font-semibold text-base">Pokemon</h3>
+              <ul className="flex flex-wrap gap-2">
+                {pokemon.map((p: PokedexHit) => (
+                  <li key={p._id}>
+                    <Link
+                      href={`/pokedex/${p.name}`}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-sm font-medium capitalize hover:bg-secondary/80"
+                    >
+                      {p.name}
+                      {p.types && p.types.length > 0 && (
+                        <span className="text-muted-foreground text-xs">
+                          ({p.types.join(", ")})
+                        </span>
+                      )}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       )}
     </section>
   );

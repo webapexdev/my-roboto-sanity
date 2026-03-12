@@ -21,10 +21,19 @@ if (!dataset) {
 }
 
 /**
+ * Sanity studio hostname must match ^[a-z]([a-z0-9-]{1,}[^-]|[a-z0-9])$
+ * (start with a letter). Project IDs can start with a number (e.g. 53l83xat).
+ */
+function hostnameFromProjectId(id: string): string {
+  if (/^[a-z]/.test(id)) return id;
+  return `studio-${id}`;
+}
+
+/**
  * Returns the correct studio host based on environment variables.
  * - If HOST_NAME is set and not "main", returns `${HOST_NAME}-${PRODUCTION_HOSTNAME}`
  * - If HOST_NAME is "main" or not set, returns PRODUCTION_HOSTNAME
- * - If PRODUCTION_HOSTNAME is not set, returns a default using projectId
+ * - If PRODUCTION_HOSTNAME is not set, returns a hostname derived from projectId (must start with a letter)
  */
 function getStudioHost(): string | undefined {
   const host = process.env.HOST_NAME;
@@ -39,7 +48,7 @@ function getStudioHost(): string | undefined {
   }
 
   if (projectId) {
-    return `${projectId}`;
+    return hostnameFromProjectId(projectId);
   }
 
   return;
@@ -57,6 +66,10 @@ export default defineCliConfig({
     dataset,
   },
   studioHost,
+  server: {
+    hostname: "127.0.0.1",
+    port: 3333,
+  },
   deployment: {
     autoUpdates: false,
   },

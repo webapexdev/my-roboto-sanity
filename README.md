@@ -31,6 +31,15 @@ A modern, full-stack monorepo template built with Next.js App Router, Sanity CMS
 - Live preview capabilities
 - Asset management
 
+## Implementation notes (Senior Backend Technical Test)
+
+This project includes the completed implementation for the three-task technical test:
+
+- **Task 1 – OpenSearch:** Blog search is powered by OpenSearch. Start a local instance with `docker compose up -d`, set `OPENSEARCH_NODE=http://localhost:9200` in `apps/web/.env.local`, then run sync once: `POST /api/search/sync`. Without OpenSearch, `/api/search` returns 503 and the blog search UI shows a graceful error. See `apps/web/.env.example` and `docker-compose.yml`.
+- **Task 2 – AWS:** See `docs/aws-architecture.md` for compute, CDN, WAF, data flow, and diagram.
+- **Task 3 – Pokedex:** `/pokedex` (paginated list) and `/pokedex/[name]` (detail with stats, abilities, evolution chain). Blog documents have an optional "Linked Pokemon" field using a custom Sanity input that searches the web app's `/api/pokedex/search`. Pokedex entries are synced into OpenSearch so blog search also returns Pokemon (e.g. searching "fire" returns fire-type Pokemon and blog posts).
+- **Docs:** `docs/running-locally.md` (env, OpenSearch, Docker), `docs/github-actions-secrets.md` (CI deploy), `docs/implementation-notes.md` (decisions and discussion prep).
+
 ## Getting Started
 
 ### Installing the template
@@ -57,7 +66,9 @@ pnpm run dev
 
 Open the Next.js app running locally in your browser on [http://localhost:3000](http://localhost:3000).
 
-Open the Studio running locally in your browser on [http://localhost:3333](http://localhost:3333). You should now see a screen prompting you to log in to the Studio. Use the same service (Google, GitHub, or email) that you used when you logged in to the CLI.
+Open the Studio running locally in your browser on [http://localhost:3333](http://localhost:3333) (or [http://127.0.0.1:3333](http://127.0.0.1:3333)). You should now see a screen prompting you to log in to the Studio. Use the same service (Google, GitHub, or email) that you used when you logged in to the CLI.
+
+> **VPN users:** The Studio dev server is bound to `127.0.0.1` so it works with VPN enabled. If localhost does not load, try [http://127.0.0.1:3333](http://127.0.0.1:3333) instead.
 
 ### Adding content with Sanity
 
