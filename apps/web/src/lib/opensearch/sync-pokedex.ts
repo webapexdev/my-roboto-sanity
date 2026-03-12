@@ -32,9 +32,9 @@ export async function syncPokedexToOpenSearch(client: Client): Promise<{
         p.sprites.front_default ??
         "";
       const types = p.types.map((t) => t.type.name);
+      const docId = `pokedex-${p.id}`;
       const doc = {
         type: "pokedex",
-        _id: `pokedex-${p.id}`,
         name: p.name,
         title: p.name,
         description: `${p.name} Pokemon. Types: ${types.join(", ")}.`,
@@ -45,7 +45,7 @@ export async function syncPokedexToOpenSearch(client: Client): Promise<{
         })),
         sprite,
       };
-      return [{ index: { _index: indexName, _id: doc._id } }, doc];
+      return [{ index: { _index: indexName, _id: docId } }, doc];
     });
     await client.bulk({ refresh: i + BATCH_SIZE >= names.length, body: bulkBody });
     indexed += pokemon.length;

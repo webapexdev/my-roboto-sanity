@@ -20,7 +20,6 @@ type BlogDoc = {
 function toSearchDoc(blog: BlogDoc) {
   return {
     type: "blog",
-    _id: blog._id,
     title: blog.title ?? "",
     description: blog.description ?? "",
     slug: blog.slug ?? "",

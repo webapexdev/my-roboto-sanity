@@ -19,7 +19,6 @@ export const CONTENT_INDEX_MAPPING = {
   mappings: {
     properties: {
       type: { type: "keyword" },
-      _id: { type: "keyword" },
       title: {
         type: "text",
         analyzer: "text_search",
