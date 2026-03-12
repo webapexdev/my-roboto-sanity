@@ -5,6 +5,7 @@ export type SearchHit = {
   type: "blog" | "pokedex";
   title?: string | null;
   description?: string | null;
+  content?: string | null;
   slug?: string | null;
   publishedAt?: string | null;
   orderRank?: string | null;
@@ -29,12 +30,32 @@ export async function searchContent(
   options: { type?: "blog" | "pokedex"; limit?: number } = {}
 ): Promise<SearchResult> {
   const { type, limit = 20 } = options;
+  const q = query.trim();
+  const qLower = q.toLowerCase();
+
+  // Match full tokens (and fuzzy) OR prefix of tokens so "secu" matches "secured"
+  const textFields = ["title^2", "description", "content", "name^2", "types"];
   const must: Array<{ [key: string]: unknown }> = [
     {
-      multi_match: {
-        query,
-        fields: ["title^2", "description", "name^2", "types"],
-        fuzziness: "AUTO",
+      bool: {
+        should: [
+          {
+            multi_match: {
+              query: q,
+              fields: textFields,
+              fuzziness: "AUTO",
+            },
+          },
+          ...(qLower.length >= 2
+            ? [
+                { prefix: { title: qLower } },
+                { prefix: { description: qLower } },
+                { prefix: { content: qLower } },
+                { prefix: { name: qLower } },
+              ]
+            : []),
+        ],
+        minimum_should_match: 1,
       },
     },
   ];

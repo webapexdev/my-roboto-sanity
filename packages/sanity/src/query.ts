@@ -258,7 +258,8 @@ export const queryBlogIndexPageBlogs = defineQuery(`
 
 export const queryAllBlogDataForSearch = defineQuery(`
   *[_type == "blog" && defined(slug.current) && (seoHideFromLists != true)]{
-    ${blogCardFragment}
+    ${blogCardFragment},
+    "content": pt::text(richText)
   }
 `);
 

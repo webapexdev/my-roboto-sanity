@@ -10,6 +10,7 @@ type BlogDoc = {
   _type: string;
   title: string | null;
   description: string | null;
+  content: string | null;
   slug: string | null;
   orderRank: string | null;
   image: unknown;
@@ -22,6 +23,7 @@ function toSearchDoc(blog: BlogDoc) {
     type: "blog",
     title: blog.title ?? "",
     description: blog.description ?? "",
+    content: blog.content ?? "",
     slug: blog.slug ?? "",
     publishedAt: blog.publishedAt ?? null,
     orderRank: blog.orderRank ?? null,

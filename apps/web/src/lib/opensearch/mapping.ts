@@ -28,6 +28,10 @@ export const CONTENT_INDEX_MAPPING = {
         type: "text",
         analyzer: "text_search",
       },
+      content: {
+        type: "text",
+        analyzer: "text_search",
+      },
       slug: { type: "keyword" },
       publishedAt: { type: "date" },
       orderRank: { type: "keyword" },
