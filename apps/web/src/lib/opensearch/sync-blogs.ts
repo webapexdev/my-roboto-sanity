@@ -59,7 +59,7 @@ export async function syncBlogsToOpenSearch(client: Client): Promise<{
   const bulkBody = blogs.flatMap((blog: BlogDoc) => {
     const doc = toSearchDoc(blog);
     return [
-      { index: { _index: indexName, _id: doc._id } },
+      { index: { _index: indexName, _id: blog._id } },
       doc,
     ];
   });
