@@ -8,9 +8,21 @@ let clientInstance: Client | null = null;
  * Used to degrade gracefully when OpenSearch is unavailable.
  */
 export function getOpenSearchClient(): Client | null {
-  const node = env.OPENSEARCH_NODE?.trim();
+  let node = env.OPENSEARCH_NODE?.trim();
   if (!node) {
     return null;
+  }
+  const username = env.OPENSEARCH_USERNAME?.trim();
+  const password = env.OPENSEARCH_PASSWORD?.trim();
+  if (username && password) {
+    try {
+      const u = new URL(node);
+      u.username = username;
+      u.password = password;
+      node = u.toString();
+    } catch {
+      // keep node as-is if URL parse fails
+    }
   }
   if (!clientInstance) {
     clientInstance = new Client({

@@ -14,6 +14,9 @@ const env = createEnv({
     SANITY_API_WRITE_TOKEN: z.string().min(1),
     /** OpenSearch (optional). When unset or empty, search API returns 503 and UI degrades gracefully. */
     OPENSEARCH_NODE: z.string().optional(),
+    /** Optional auth for OpenSearch (e.g. Bonsai). Set with OPENSEARCH_PASSWORD for basic auth. */
+    OPENSEARCH_USERNAME: z.string().optional(),
+    OPENSEARCH_PASSWORD: z.string().optional(),
     OPENSEARCH_INDEX: z.string().min(1).default("content"),
     /** Secret for protecting POST /api/search/sync (webhook/cron). Optional if sync is script-only. */
     SEARCH_SYNC_SECRET: z.string().min(1).optional(),
